@@ -6,8 +6,8 @@ import os
 from discord.ext import commands
 from dotenv import load_dotenv
 
-
-f = open('./sound.json')
+cwd = os.path.dirname(os.path.realpath(__file__))
+f = open(cwd + '/sound.json')
 sound = json.load(f)
 
 def ipa_to_eng(w):
@@ -66,5 +66,21 @@ async def wordz(ctx, *, string):
     await ctx.message.delete()
     author = str(ctx.message.author).split('#')[0]
     await ctx.send(author + ": " + editted)
+
+@bot.command(name='wzs')
+async def wordz_to_speech(ctx, *, string):
+    line = re.sub(r'[^\w\s]', '', string)
+    arr = line.split(" ")
+    output = []
+
+    for word in arr:
+        wordz = ipa.convert(word)
+        output_word = ipa_to_eng(wordz)
+        output.append(output_word)
+
+    editted = " ".join(output)
+    await ctx.message.delete()
+    author = str(ctx.message.author).split('#')[0]
+    await ctx.send(author + ": " + editted, tts=True)
 
 bot.run(TOKEN)
